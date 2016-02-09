@@ -1,0 +1,107 @@
+#!/bin/bash
+
+#term colors
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+GRAY=$(tput setaf 7)
+DARKGRAY=$(tput setaf 8)
+LRED=$(tput setaf 9)
+LGREEN=$(tput setaf 10)
+LYELLOW=$(tput setaf 11)
+LBLUE=$(tput setaf 12)
+LMAGENTA=$(tput setaf 13)
+LCYAN=$(tput setaf 14)
+WHITE=$(tput setaf 15)
+DEF=$(tput sgr0)
+
+# pwm setup
+setupcj(){
+			utp "Welcome to the cj environment installer!"
+
+			utpnc "Do you wish to install and configure the cj environment? [Y/n]"
+			read -n 1 cjcopy
+			[[ -z "$cjcopy" ]] || echo
+			if [[ "$cjcopy" != [nN] ]]; then
+				if mkdir -p "$HOME/.cj"; then
+					utp "Cloning.."
+          git clone https://github.com/chr1573r/cj "$HOME/.cj"
+          fver "$HOME/.cj/cj" || utpf "Cloning failed! Please retry."
+					chmod +x "$HOME/.cj/cj"
+					utp "Cloned to $HOME/.cj"
+
+          utp "Cloning aliases..."
+          git clone https://github.com/chr1573r/aliases "$HOME/.cj/repos/aliases"
+          fver "$HOME/.cj/repos/aliases/aliases" || utpf "Cloning failed! Please retry."
+
+          utp "Adding cj environment loader to .profile..."
+          printf 'source $(~/.cj/cj env)' >> "$HOME/.profile"
+          utp "Re-sourcing .profile.."
+          source "$HOME/.profile"
+          alias cj || utpf "Something went wrong, alias cj not registered."
+          utp "cj enviroment is installed and working correctly!"
+				else
+						utpf "Could not install. Permission denied."
+				fi
+      else
+        utpf "Setup aborted."
+			fi
+
+}
+
+
+# tty write helpers
+utp(){
+	echo -e "${YELLOW}cji${DARKGRAY}# ${DEF}$1${DEF}"
+}
+
+
+utpn(){
+	echo -en "${YELLOW}cji${DARKGRAY}# ${DEF}$1${DEF}"
+}
+
+utpnc(){
+	echo -en "${YELLOW}cji${DARKGRAY}# ${DEF}$1${LYELLOW}"
+}
+
+utpw(){
+	echo -e "${YELLOW}cji${DARKGRAY}# ${YELLOW}WARN: ${DEF}$1${DEF}"
+}
+
+utpf(){
+	echo -e "${YELLOW}cji${DARKGRAY}# ${LRED}FATAL: ${DEF}$1${DEF}"
+	exit
+}
+
+ut(){
+	echo -e "$1 $DEF"
+}
+
+utg(){
+	echo -e "${GREEN} OK${DEF}"
+}
+
+utn(){
+	echo -en "$1 $DEF"
+}
+
+# /tty write helpers
+
+
+
+# fs tests
+dver(){
+	[[ -d "$1" ]]
+}
+
+fver(){
+	[[ -f "$1" ]]
+	#echo $?
+}
+
+# /fs tests
+
+setupcj
