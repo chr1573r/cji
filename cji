@@ -24,9 +24,8 @@ setupcj(){
 
       alias cj 2&>/dev/null && utpw "cj alias detected, already installed?"
 
-			utpnc "Do you wish to install and configure the cj environment? [Y/n]"
+			utp "Do you wish to install and configure the cj environment? [Y/n]"
 			read -n 1 cjcopy
-			[[ -z "$cjcopy" ]] || echo
 			if [[ "$cjcopy" != [nN] ]]; then
 				if mkdir -p "$HOME/.cj"; then
 					utp "Cloning cj..."
