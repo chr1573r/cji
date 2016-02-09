@@ -23,7 +23,8 @@ setupcj(){
 			utp "Welcome to the cj environment installer!"
 
 			utpnc "Do you wish to install and configure the cj environment? [Y/n]"
-			read -n 1 cjcopy
+			read cjcopy
+      echo $cjcopy && sleep 10
 			[[ -z "$cjcopy" ]] || echo
 			if [[ "$cjcopy" != [nN] ]]; then
 				if mkdir -p "$HOME/.cj"; then
