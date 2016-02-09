@@ -22,9 +22,12 @@ DEF=$(tput sgr0)
 setupcj(){
 			utp "Welcome to the cj environment installer!"
 
+
+      utp "Press any key to continue.."
+      read -n 1 tempkey
+      
 			utpnc "Do you wish to install and configure the cj environment? [Y/n]"
-			read cjcopy
-      echo $cjcopy && sleep 10
+			read -n 1 cjcopy
 			[[ -z "$cjcopy" ]] || echo
 			if [[ "$cjcopy" != [nN] ]]; then
 				if mkdir -p "$HOME/.cj"; then
