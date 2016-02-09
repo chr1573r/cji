@@ -22,10 +22,6 @@ DEF=$(tput sgr0)
 setupcj(){
 			utp "Welcome to the cj environment installer!"
 
-
-      utp "Press any key to continue.."
-      read -n 1 tempkey
-
 			utpnc "Do you wish to install and configure the cj environment? [Y/n]"
 			read -n 1 cjcopy
 			[[ -z "$cjcopy" ]] || echo
@@ -42,7 +38,7 @@ setupcj(){
           fver "$HOME/.cj/repos/aliases/aliases" || utpf "Cloning failed! Please retry."
 
           utp "Adding cj environment loader to .profile..."
-          printf 'source $(~/.cj/cj env)' >> "$HOME/.profile"
+          echo 'source $(~/.cj/cj env)' >> "$HOME/.profile"
           utp "Re-sourcing .profile.."
           source "$HOME/.profile"
           alias cj || utpf "Something went wrong, alias cj not registered."
