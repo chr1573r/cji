@@ -22,12 +22,14 @@ DEF=$(tput sgr0)
 setupcj(){
 			utp "Welcome to the cj environment installer!"
 
+      alias cj && utpw "cj alias detected, already installed?"
+
 			utpnc "Do you wish to install and configure the cj environment? [Y/n]"
 			read -n 1 cjcopy
 			[[ -z "$cjcopy" ]] || echo
 			if [[ "$cjcopy" != [nN] ]]; then
 				if mkdir -p "$HOME/.cj"; then
-					utp "Cloning.."
+					utp "Cloning cj..."
           git clone https://github.com/chr1573r/cj "$HOME/.cj"
           fver "$HOME/.cj/cj" || utpf "Cloning failed! Please retry."
 					chmod +x "$HOME/.cj/cj"
@@ -36,13 +38,14 @@ setupcj(){
           utp "Cloning aliases..."
           git clone https://github.com/chr1573r/aliases "$HOME/.cj/repos/aliases"
           fver "$HOME/.cj/repos/aliases/aliases" || utpf "Cloning failed! Please retry."
+          utp "Cloned to $HOME/.cj/repos/aliases"
 
-          utp "Adding cj environment loader to .profile..."
+          utp "Adding cj env loader to .profile..."
           echo 'source $(~/.cj/cj env)' >> "$HOME/.profile"
           utp "Re-sourcing .profile.."
           source "$HOME/.profile"
           alias cj || utpf "Something went wrong, alias cj not registered."
-          utp "cj enviroment is installed and working correctly!"
+          utp "cj environment is installed and working correctly!"
 				else
 						utpf "Could not install. Permission denied."
 				fi
