@@ -41,9 +41,9 @@ setupcj(){
           utp "Cloned to $HOME/.cj/repos/aliases"
 
           utp "Adding cj env loader to .profile..."
-          echo 'source $(~/.cj/cj env)' >> "$HOME/.profile"
-          utp "Re-sourcing .profile.."
-          source "$HOME/.profile"
+          echo 'source $(~/.cj/cj env)' >> "$HOME/.bashrc"
+          utp "Re-sourcing .bashrc.."
+          source "$HOME/.bashrc"
           alias cj 2&>/dev/null || utpf "Something went wrong, alias cj not registered."
           utp "cj environment is installed and working correctly!"
 				else
