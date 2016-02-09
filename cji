@@ -22,7 +22,7 @@ DEF=$(tput sgr0)
 setupcj(){
 			utp "Welcome to the cj environment installer!"
 
-      alias cj && utpw "cj alias detected, already installed?"
+      alias cj 2&>/dev/null && utpw "cj alias detected, already installed?"
 
 			utpnc "Do you wish to install and configure the cj environment? [Y/n]"
 			read -n 1 cjcopy
@@ -44,7 +44,7 @@ setupcj(){
           echo 'source $(~/.cj/cj env)' >> "$HOME/.profile"
           utp "Re-sourcing .profile.."
           source "$HOME/.profile"
-          alias cj || utpf "Something went wrong, alias cj not registered."
+          alias cj 2&>/dev/null || utpf "Something went wrong, alias cj not registered."
           utp "cj environment is installed and working correctly!"
 				else
 						utpf "Could not install. Permission denied."
