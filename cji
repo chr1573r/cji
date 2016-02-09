@@ -25,7 +25,7 @@ setupcj(){
 
       utp "Press any key to continue.."
       read -n 1 tempkey
-      
+
 			utpnc "Do you wish to install and configure the cj environment? [Y/n]"
 			read -n 1 cjcopy
 			[[ -z "$cjcopy" ]] || echo
