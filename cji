@@ -44,7 +44,7 @@ setupcj(){
           echo 'source $(~/.cj/cj env)' >> "$HOME/.bashrc"
           utp "Re-sourcing .bashrc.."
           source "$HOME/.bashrc"
-          alias cj 2&>/dev/null || utpf "Something went wrong, alias cj not registered."
+          alias cj || utpf "Something went wrong, alias cj not registered."
           utp "cj environment is installed and working correctly!"
 				else
 						utpf "Could not install. Permission denied."
