@@ -20,19 +20,18 @@ DEF=$(tput sgr0)
 
 # pwm setup
 setupcj(){
-			utp "Welcome to the cj environment installer!"
-
-      alias cj 2&>/dev/null && utpw "cj alias detected, already installed?"
-
-			utp "Do you wish to install and configure the cj environment? [Y/n]"
-			read -n 1 cjcopy
-			if [[ "$cjcopy" != [nN] ]]; then
-				if mkdir -p "$HOME/.cj"; then
-					utp "Cloning cj..."
+	hash git || utpf 'git is required to install cj' 
+	utp "Welcome to the cj environment installer!"
+        alias cj 2&>/dev/null && utpw "cj alias detected, already installed?"
+	utp "Do you wish to install and configure the cj environment? [Y/n]"
+	read -n 1 cjcopy
+	if [[ "$cjcopy" != [nN] ]]; then
+	if mkdir -p "$HOME/.cj"; then
+	  utp "Cloning cj..."
           git clone https://github.com/chr1573r/cj "$HOME/.cj"
           fver "$HOME/.cj/cj" || utpf "Cloning failed! Please retry."
-					chmod +x "$HOME/.cj/cj"
-					utp "Cloned to $HOME/.cj"
+		chmod +x "$HOME/.cj/cj"
+		utp "Cloned to $HOME/.cj"
 
           utp "Cloning aliases..."
           git clone https://github.com/chr1573r/aliases "$HOME/.cj/repos/aliases"
