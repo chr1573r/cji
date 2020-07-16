@@ -21,8 +21,8 @@ DEF=$(tput sgr0)
 # pwm setup
 setupcj(){
 	utp "Welcome to the cj environment installer!"
-	hash git 2&>/dev/null || utpf 'git missing, please install and re-run setup' 
-        alias cj 2&>/dev/null && utpw "cj alias detected, already installed?"
+	hash git  > /dev/null 2>&1 || utpf 'git missing, please install and re-run setup' 
+        alias cj  > /dev/null 2>&1 || utpw "cj alias detected, already installed?"
 	utp "Do you wish to install and configure the cj environment? [Y/n]"
 	read -n 1 cjcopy
 	if [[ "$cjcopy" != [nN] ]]; then
