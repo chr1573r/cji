@@ -26,30 +26,31 @@ setupcj(){
 	utp "Do you wish to install and configure the cj environment? [Y/n]"
 	read -n 1 cjcopy
 	if [[ "$cjcopy" != [nN] ]]; then
-	if mkdir -p "$HOME/.cj"; then
-	  utp "Cloning cj..."
-          git clone https://github.com/chr1573r/cj "$HOME/.cj"
-          fver "$HOME/.cj/cj" || utpf "Cloning failed! Please retry."
-		chmod +x "$HOME/.cj/cj"
-		utp "Cloned to $HOME/.cj"
+		if mkdir -p "$HOME/.cj"; then
+			utp "Cloning cj..."
+			git clone git@github.com:chr1573r/cj.git "$HOME/.cj"
+			fver "$HOME/.cj/cj" || utpf "Cloning failed! Please retry."
+			chmod +x "$HOME/.cj/cj"
+			utp "Cloned to $HOME/.cj"
 
-          utp "Cloning aliases..."
-          git clone https://github.com/chr1573r/aliases "$HOME/.cj/repos/aliases"
-          fver "$HOME/.cj/repos/aliases/aliases" || utpf "Cloning failed! Please retry."
-          utp "Cloned to $HOME/.cj/repos/aliases"
+			#utp "Cloning aliases..."
+			#git clone https://github.com/chr1573r/aliases "$HOME/.cj/repos/aliases"
+			#fver "$HOME/.cj/repos/aliases/aliases" || utpf "Cloning failed! Please retry."
+			#utp "Cloned to $HOME/.cj/repos/aliases"
 
-          utp "Adding cj env loader to .bashrc..."
-          echo 'source $($HOME/.cj/cj env)' >> "$HOME/.bashrc"
-          utp "Re-sourcing .bashrc.."
-          source "$HOME/.bashrc"
-          alias cj || utpf "Something went wrong, alias cj not registered."
-          utp "cj environment is installed and working correctly!"
-				else
-						utpf "Could not install. Permission denied."
-				fi
-      else
+			utp "Adding cj env loader to .bashrc..."
+			echo 'source $($HOME/.cj/cj env)' >> "$HOME/.bashrc"
+			utp "Re-sourcing .bashrc.."
+			source "$HOME/.bashrc"
+			grep -q 'cj env' || utpf "Something went wrong, cj not found in bashrc"
+			#alias cj || utpf "Something went wrong, alias cj not registered."
+			utp "cj environment is installed and working correctly!"
+		else
+			utpf "Could not install. Permission denied."
+		fi
+    else
         utpf "Setup aborted."
-			fi
+	fi
 
 }
 
