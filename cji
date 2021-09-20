@@ -34,7 +34,7 @@ setupcj(){
 			utp "Cloned to $HOME/.cj"
 
 			utp "Cloning aliases..."
-			git clone https://github.com/chr1573r/aliases "$HOME/.cj/repos/aliases"
+			git clone clone git@github.com:chr1573r/aliases.git "$HOME/.cj/repos/aliases"
 			fver "$HOME/.cj/repos/aliases/aliases" || utpf "Cloning failed! Please retry."
 			utp "Cloned to $HOME/.cj/repos/aliases"
 
