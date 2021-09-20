@@ -40,7 +40,7 @@ setupcj(){
 
 			utp "Adding cj env loader to .bashrc..."
 			echo 'source $($HOME/.cj/cj env)' >> "$HOME/.bashrc"
-			utp "Re-sourcing .bashrc.."
+			#utp "Re-sourcing .bashrc.."
 			#source "$HOME/.bashrc"
 			grep -q 'cj env' || utpf "Something went wrong, cj not found in bashrc"
 			#alias cj || utpf "Something went wrong, alias cj not registered."
