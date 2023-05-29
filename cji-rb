@@ -1,0 +1,189 @@
+#!/bin/bash
+#
+# THIS IS NOT FUNCTIONAL YET!
+#
+# cji-rb
+# Installer that uses rollerblades to fetch cj instead of github repo cloning (https://github.com/chr1573r/rollerblades)
+
+# TODO/NOTES
+# probably need to change cj first to support a seperation of cj and aliases 'installed' versions and 'repo/development' versions.
+# rb installed cj will not contain the git repo, which will break stuff that rely on the git repo such as version info and updating
+# Will need to make cj support both install methods, github/classic and rb distributed, so that cj can be properly initialised/loaded into the shell
+# There should also be some sort of migration mechanism for transitioning existing installs from classic to rb
+
+# rollerblades distribution public key
+# defaults to a public key used for development
+# you will need to verride this with your own, for example by doing "export cji_rb_trustedkey=<your pub key>" ahead of running cji-rb.
+
+if [[ -z "$cji_rb_trustedkey" ]]; then
+	cji_rb_trustedkey="-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEW1FLUT+AAVw5EP3GrNHXKdUEfi0E
+DeBb9Z+ULgACZterKDSPjUYZgl6WBDOl6lAgbLNAWeQ3xM3tQtNG3af44A==
+-----END PUBLIC KEY-----"
+fi
+
+#term colors
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+GRAY=$(tput setaf 7)
+DARKGRAY=$(tput setaf 8)
+LRED=$(tput setaf 9)
+LGREEN=$(tput setaf 10)
+LYELLOW=$(tput setaf 11)
+LBLUE=$(tput setaf 12)
+LMAGENTA=$(tput setaf 13)
+LCYAN=$(tput setaf 14)
+WHITE=$(tput setaf 15)
+DEF=$(tput sgr0)
+
+# tty write helpers
+utp(){
+	echo -e "${YELLOW}cji${DARKGRAY}# ${DEF}$1${DEF}"
+}
+
+utpn(){
+	echo -en "${YELLOW}cji${DARKGRAY}# ${DEF}$1${DEF}"
+}
+
+utpnc(){
+	echo -en "${YELLOW}cji${DARKGRAY}# ${DEF}$1${LYELLOW}"
+}
+
+utpw(){
+	echo -e "${YELLOW}cji${DARKGRAY}# ${YELLOW}WARN: ${DEF}$1${DEF}"
+}
+
+utpf(){
+	echo -e "${YELLOW}cji${DARKGRAY}# ${LRED}FATAL: ${DEF}$1${DEF}"
+	exit 1
+}
+
+ut(){
+	echo -e "$1 $DEF"
+}
+
+utg(){
+	echo -e "${GREEN} OK${DEF}"
+}
+
+utn(){
+	echo -en "$1 $DEF"
+}
+
+# /tty write helpers
+
+
+# fs tests
+dver(){
+	[[ -d "$1" ]]
+}
+
+fver(){
+	[[ -f "$1" ]]
+	#echo $?
+}
+
+# /fs tests
+
+
+sign_verify(){ # sign_check <signature file> <file to verify>
+	utpn "  "
+	openssl dgst -sha256 -verify <(echo "$cji_rb_trustedkey") -signature "$1" "$2"
+}
+
+# Download, verify and unpack a package from rollerblades distribution point
+rb_fetch(){ #rb_fetch <package>
+		utp "Fetching package '${1}'..."
+		mkdir "${1}"
+		wget -q -O "rb-${1}.tar.gz" "$cjurl/${1}.tar.gz"
+		wget -q -O "rb-${1}.signature" "$cjurl/${1}.signature"
+		wget -q -O "rb-${1}.updated" "$cjurl/${1}.updated"
+
+		if fver "rb-${1}.updated"; then
+			utp "'${1}' package date is $(cat cji-cj.updated)"
+		else
+			utpf "Download failed! Verify that rollerblades distribution point is correct and available."
+		fi
+
+		utp "Verifying '${1}'..."
+		if ! sign_verify "rb-${1}.signature" "rb-${1}.tar.gz"; then
+			utpf "'${1}' package signature verification failed, aborting!"
+		fi
+		utp "Unpacking '${1}'..."
+		tar xvzf "rb-${1}.tar.gz" -C "${1}"
+}
+
+# setup
+# downloads and installs the cj environment on the local machine, using rollerblades
+
+setupcj(){
+	utp "Welcome to the cj environment installer!"
+	hash wget > /dev/null 2>&1 || utpf 'wget missing, please install and re-run setup' 
+        alias cj > /dev/null 2>&1 && utpw "cj alias detected, already installed?"
+	utpn "Do you wish to install and configure the cj environment? [Y/n] "
+	read -n 1 cjcopy
+	echo
+	if [[ "$cjcopy" != [nN] ]]; then
+		if ! dver "cji-rb-files"; then
+			mkdir "cji-rb-files"
+			if ! dver "cji-rb-files"; then
+				utpf "Fatal, unable to create temp download directory 'cji-rb-files'"
+			fi
+		else
+			utpf "Fatal, directory 'cji-rb-files' already exist, this conflicts with cji temp download location, Delete/move directory and re-run cji."
+		fi
+		utpn "Please specify rollerblades distribution point/base url: "
+		read cjurl
+		echo
+
+		utp "Connecting to $cjurl..."
+		echo "$MAGENTA"
+		curl "$cjurl/rollerblades.log"
+		echo
+		cd 'cji-rb-files'
+		rb_fetch cj
+		rb_fetch aliases
+		echo "$DEF"
+		cd ..
+		utp "Cleaning up..."
+		sleep 4
+		if dver "cji-rb-files"; then
+			rm -r 'cji-rb-files'
+		fi
+		utpw "cji-rb is not finished, exiting"
+		exit
+		if mkdir -p "$HOME/.cj"; then
+
+			utp "Installing 'cj'.."
+			mv "cji-rb-files/cj/*" "$HOME/.cj/"
+			fver "$HOME/.cj/cj" || utpf "Installing 'cj' to '$HOME/.cj' failed! Please retry."
+			chmod +x "$HOME/.cj/cj"
+			utp "Installed 'cj' to $HOME/.cj"
+
+			utp "Installing 'aliases'.."
+			 "$HOME/.cj/repos/aliases"
+			fver "$HOME/.cj/repos/aliases/aliases" || utpf "Cloning failed! Please retry."
+			utp "Cloned to $HOME/.cj/repos/aliases"
+
+			utp "Adding cj env loader to .bashrc..."
+			echo 'source $($HOME/.cj/cj env)' >> "$HOME/.bashrc"
+			#utp "Re-sourcing .bashrc.."
+			#source "$HOME/.bashrc"
+			grep -q 'cj env' || utpf "Something went wrong, cj not found in bashrc"
+			#alias cj || utpf "Something went wrong, alias cj not registered."
+			utp "cj environment is installed."
+			utp "Please try opening a new shell and verify correct operation in case something needs to be corrected manually"
+		else
+			utpf "Could not install. Permission denied."
+		fi
+    else
+        utpf "Setup aborted."
+	fi
+}
+
+
+setupcj
