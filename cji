@@ -40,12 +40,21 @@ setupcj(){
 
 			utp "Adding cj env loader to .bashrc..."
 			echo 'source $($HOME/.cj/cj env)' >> "$HOME/.bashrc"
-			#utp "Re-sourcing .bashrc.."
-			#source "$HOME/.bashrc"
-			grep -q 'cj env' || utpf "Something went wrong, cj not found in bashrc"
-			#alias cj || utpf "Something went wrong, alias cj not registered."
-			utp "cj environment is installed."
-			utp "Please try opening a new shell and verify correct operation in case something needs to be corrected manually"
+			if grep -q 'cj env' "$HOME/.bashrc"; then
+				utp "Re-sourcing .bashrc.."
+				source "$HOME/.bashrc"
+				if alias cj; then
+					utp "cj environment installed."
+					utp "Please try opening a new shell and verify correct operation in case something needs to be corrected manually"
+					exit
+				else
+					utpw "Something went wrong, alias cj not registered."
+					utpf "cj environment setup completed with errors"
+				fi
+			else
+				utpw "Something went wrong, cj not found in bashrc"
+				utpf "cj environment setup completed with errors"
+			fi
 		else
 			utpf "Could not install. Permission denied."
 		fi
@@ -76,7 +85,7 @@ utpw(){
 
 utpf(){
 	echo -e "${YELLOW}cji${DARKGRAY}# ${LRED}FATAL: ${DEF}$1${DEF}"
-	exit
+	exit 1
 }
 
 ut(){
